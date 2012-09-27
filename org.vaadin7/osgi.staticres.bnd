@@ -1,0 +1,4 @@
+Bundle-Version: 1.0.0
+Service-Component: org.vaadin7.osgi.staticres.StaticResources
+Private-Package: org.vaadin7.osgi.staticres
+-sources: true

@@ -1,0 +1,7 @@
+Bundle-Version: 1.0.0
+Bundle-Activator: org.vaadin7.osgi.Activator
+
+Private-Package: org.vaadin7.osgi
+		
+-sources: true
+Export-Package: org.vaadin7.osgi.common
