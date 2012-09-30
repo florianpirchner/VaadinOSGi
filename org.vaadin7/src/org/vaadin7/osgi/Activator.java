@@ -79,21 +79,18 @@ public class Activator implements BundleActivator {
  * 
  * @author brindy
  */
-@SuppressWarnings("rawtypes")
 class VaadinAppTracker extends ServiceTracker {
 
 	private static final String PREFIX = "com.vaadin.Session";
 
 	private Map<ServiceReference, HttpServiceTracker> trackers = new IdentityHashMap<ServiceReference, HttpServiceTracker>();
 
-	@SuppressWarnings("unchecked")
 	public VaadinAppTracker(BundleContext ctx) throws InvalidSyntaxException {
 		super(ctx,
 				ctx.createFilter("(component.factory=org.vaadin.Session/*)"),
 				null);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object addingService(ServiceReference reference) {
 		Object o = super.addingService(reference);
@@ -142,7 +139,6 @@ class VaadinAppTracker extends ServiceTracker {
  * 
  * @author brindy
  */
-@SuppressWarnings("rawtypes")
 class HttpServiceTracker extends ServiceTracker {
 
 	protected ComponentFactory factory;
@@ -151,7 +147,6 @@ class HttpServiceTracker extends ServiceTracker {
 
 	private Map<HttpService, AppRegistration> configs = new IdentityHashMap<HttpService, AppRegistration>();
 
-	@SuppressWarnings("unchecked")
 	public HttpServiceTracker(BundleContext ctx, ComponentFactory factory,
 			String alias) {
 		super(ctx, HttpService.class.getName(), null);
@@ -160,7 +155,6 @@ class HttpServiceTracker extends ServiceTracker {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Object addingService(ServiceReference reference) {
 		HttpService http = (HttpService) super.addingService(reference);
 		AppRegistration config = new AppRegistration(http, factory, alias);
@@ -180,7 +174,6 @@ class HttpServiceTracker extends ServiceTracker {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void removedService(ServiceReference reference, Object service) {
 		configs.remove(service).kill();
 		super.removedService(reference, service);
@@ -224,7 +217,7 @@ class AppRegistration implements ManagedService {
 	public void updated(@SuppressWarnings("rawtypes") Dictionary properties)
 			throws ConfigurationException {
 		kill();
-		servlet = new VaadinOSGiServlet(factory);
+		servlet = new VaadinOSGiServlet(factory, null);
 		try {
 			http.registerServlet(alias, servlet, properties, null);
 		} catch (Exception e) {

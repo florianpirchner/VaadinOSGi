@@ -11,10 +11,15 @@ Export-Package: org.vaadin7.osgi,
  uk.org.brindy.guessit7.view
 Import-Package: aQute.bnd.annotation.component;version="1.43.1",
  javax.servlet.http,
+ org.json,
+ org.jsoup;version="1.7.1",
+ org.jsoup.nodes;version="1.7.1",
  org.osgi.framework,
  org.osgi.service.cm;version="1.4.0",
  org.osgi.service.component;version="1.2.0",
  org.osgi.service.http;version="1.2.1",
  org.osgi.util.tracker;version="1.5.1"
-Require-Bundle: com.vaadin;bundle-version="7.0.0"
+Require-Bundle: com.vaadin.shared;bundle-version="7.0.0",
+ com.vaadin.vaadin-server;bundle-version="7.0.0",
+ com.vaadin.vaadin-client;bundle-version="7.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

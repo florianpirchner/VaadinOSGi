@@ -5,11 +5,12 @@ import java.util.Dictionary;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
 
-import com.vaadin.server.AbstractUIProvider;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.UIClassSelectionEvent;
+import com.vaadin.server.UICreateEvent;
+import com.vaadin.server.UIProvider;
 import com.vaadin.ui.UI;
 
-public class OSGiUIProvider extends AbstractUIProvider {
+public class OSGiUIProvider extends UIProvider {
 
 	private final ComponentFactory factory;
 	private final Class<? extends UI> uiClass;
@@ -24,12 +25,12 @@ public class OSGiUIProvider extends AbstractUIProvider {
 	}
 
 	@Override
-	public Class<? extends UI> getUIClass(WrappedRequest request) {
+	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 		return uiClass;
 	}
 
 	@Override
-	public UI createInstance(Class<? extends UI> type, WrappedRequest request) {
+	public UI createInstance(UICreateEvent event) {
 		instance = factory.newInstance(null);
 		return (UI) instance.getInstance();
 	}

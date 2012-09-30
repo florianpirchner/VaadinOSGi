@@ -7,8 +7,11 @@ Bundle-Version: 1.0.0
 Service-Component: uk.org.brindy.guessit7.GuessItUI;\
 		servicefactory:=false,\
 	uk.org.brindy.guessit7.GuessItSession;\
-		UIs/addUI/removeUI='org.osgi.service.component.ComponentFactory(component.factory=org.vaadin.UI/*)+';\
-		activate:=activate;\
-		deactivate:=deactivate
+		UIs/addUI/removeUI='org.osgi.service.component.ComponentFactory(component.factory=org.vaadin.UI/*)'
 -output=org.uk.brindy.guessit7_${Bundle-Version}.jar
 -sources=true
+Import-Package: javax.servlet.http,\
+	com.vaadin.shared.ui.ui,\
+	org.osgi.framework,\
+	org.json,\
+	*

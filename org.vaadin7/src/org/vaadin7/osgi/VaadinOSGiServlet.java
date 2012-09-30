@@ -19,9 +19,8 @@
  */
 package org.vaadin7.osgi;
 
+import java.util.Dictionary;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,17 +29,13 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
-import org.osgi.service.http.HttpService;
-import org.osgi.util.tracker.ServiceTracker;
 
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletSession;
+import com.vaadin.server.VaadinSession;
 
 /**
  * Used to create instances of applications that have been registered with the
@@ -48,26 +43,38 @@ import com.vaadin.server.VaadinServletSession;
  * 
  * @author brindy
  */
-class VaadinOSGiServlet extends VaadinServlet {
+class VaadinOSGiServlet extends VaadinServlet implements
+		OSGiServletService.IVaadinSessionManager {
 
 	private static final long serialVersionUID = 1L;
 
 	private final ComponentFactory factory;
+	private final Map<String, Object> properties;
 
-	private Set<VaadinSession> sessions = new HashSet<VaadinSession>();
+	private Set<VaadinSessionInfo> sessions = new HashSet<VaadinSessionInfo>();
 
-	public VaadinOSGiServlet(ComponentFactory factory) {
+	public VaadinOSGiServlet(ComponentFactory factory,
+			Map<String, Object> properties) {
 		this.factory = factory;
+		this.properties = properties;
 	}
 
-	protected VaadinServletSession doCreateVaadinSession(
-			HttpServletRequest request) {
-		final VaadinSession info = new VaadinSession(factory.newInstance(null),
-				request.getSession());
+	@Override
+	protected OSGiServletService createServletService(
+			DeploymentConfiguration deploymentConfiguration) {
+		return new OSGiServletService(this, deploymentConfiguration, this);
+	}
+
+	@Override
+	public VaadinSession createVaadinSession(VaadinRequest request,
+			HttpServletRequest httpServletRequest) {
+		@SuppressWarnings("rawtypes")
+		final VaadinSessionInfo info = new VaadinSessionInfo(
+				factory.newInstance((Dictionary) properties),
+				httpServletRequest.getSession());
 
 		info.session.setAttribute(VaadinOSGiServlet.class.getName(),
 				new HttpSessionListener() {
-
 					@Override
 					public void sessionDestroyed(HttpSessionEvent arg0) {
 						info.dispose();
@@ -77,11 +84,9 @@ class VaadinOSGiServlet extends VaadinServlet {
 					public void sessionCreated(HttpSessionEvent arg0) {
 
 					}
-
 				});
 		System.out.println("Ready: " + info); //$NON-NLS-1$
-		return (VaadinServletSession) info.instance.getInstance();
-
+		return (VaadinSession) info.instance.getInstance();
 	}
 
 	@Override
@@ -89,10 +94,10 @@ class VaadinOSGiServlet extends VaadinServlet {
 		super.destroy();
 
 		synchronized (this) {
-			HashSet<VaadinSession> sessions = new HashSet<VaadinSession>();
+			HashSet<VaadinSessionInfo> sessions = new HashSet<VaadinSessionInfo>();
 			sessions.addAll(this.sessions);
 			this.sessions.clear();
-			for (VaadinSession info : sessions) {
+			for (VaadinSessionInfo info : sessions) {
 				info.dispose();
 			}
 		}
@@ -102,20 +107,19 @@ class VaadinOSGiServlet extends VaadinServlet {
 	 * Track the component instance and session. If this is disposed the entire
 	 * associated http session is also disposed.
 	 */
-	class VaadinSession {
+	class VaadinSessionInfo {
 
 		final ComponentInstance instance;
-
 		final HttpSession session;
 
-		public VaadinSession(ComponentInstance instance, HttpSession session) {
+		public VaadinSessionInfo(ComponentInstance instance, HttpSession session) {
 			this.instance = instance;
 			this.session = session;
 			sessions.add(this);
 		}
 
 		public void dispose() {
-			VaadinSession app = (VaadinSession) instance.getInstance();
+			VaadinSessionInfo app = (VaadinSessionInfo) instance.getInstance();
 			if (app != null) {
 				app.dispose();
 			}
@@ -126,4 +130,5 @@ class VaadinOSGiServlet extends VaadinServlet {
 			sessions.remove(this);
 		}
 	}
+
 }

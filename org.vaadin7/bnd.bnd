@@ -1,4 +1,6 @@
--buildpath: com.vaadin,\
+-buildpath: com.vaadin.vaadin-client,\
+	com.vaadin.vaadin-server,\
+	com.vaadin.shared,\
 	osgi.core,\
 	javax.servlet,\
 	osgi.cmpn,\

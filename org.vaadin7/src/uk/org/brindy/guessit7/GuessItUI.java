@@ -24,7 +24,7 @@ import uk.org.brindy.guessit7.view.MainView;
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Reference;
 
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -32,6 +32,7 @@ import com.vaadin.ui.Window;
  * Specify the class name after the factory name.
  */
 @Component(factory = "org.vaadin.UI/uk.org.brindy.guessit7.GuessItUI")
+
 public class GuessItUI extends UI {
 
 	private static final long serialVersionUID = 1L;
@@ -41,7 +42,7 @@ public class GuessItUI extends UI {
 	private Window mainWindow = new Window("Guess It!");
 
 	@Override
-	public void init(WrappedRequest request) {
+	public void init(VaadinRequest request) {
 		setContent(mainWindow);
 		mainWindow.setWidth("300px");
 		new MainView(this);
